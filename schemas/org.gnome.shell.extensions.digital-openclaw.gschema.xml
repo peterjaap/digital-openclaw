@@ -5,5 +5,9 @@
       <default>false</default>
       <summary>Block suspend when the lid closes</summary>
     </key>
+    <key name="lid-close-sound" type="b">
+      <default>true</default>
+      <summary>Play a warning sound when the lid closes while the laptop stays awake</summary>
+    </key>
   </schema>
 </schemalist>

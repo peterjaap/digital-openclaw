@@ -12,6 +12,15 @@ The extension stays active on the lock screen. Without that, GNOME releases the 
 
 While the lock is active, a claw icon shows in the top bar.
 
+If you close the lid while the lock is active, the laptop plays a warning sound three times. The sound tells you that the laptop did not suspend, so you do not put a running laptop in a bag. The extension uses the `dialog-warning` sound of your sound theme. If you turn off "Alert Sounds" in the GNOME sound settings, or set the alert volume to zero, you do not hear the warning.
+
+To turn off the warning sound, run:
+
+```sh
+gsettings --schemadir ~/.local/share/gnome-shell/extensions/digital-openclaw@peterjaap/schemas \
+  set org.gnome.shell.extensions.digital-openclaw lid-close-sound false
+```
+
 Older extensions change the `lid-close-ac-action` and `lid-close-battery-action` keys of `org.gnome.settings-daemon.plugins.power`. The power plugin of GNOME 46 does not read these keys, so those extensions have no effect. Digital OpenClaw talks to logind directly.
 
 ## Requirements
@@ -70,7 +79,7 @@ The list must show a line for "Digital OpenClaw" with `handle-lid-switch` and `b
 
 ## Warning
 
-Before you put the laptop in a bag, turn the toggle off. A laptop that runs with the lid closed can get hot.
+Before you put the laptop in a bag, turn the toggle off. The warning sound is a reminder only, and it does not suspend the laptop. A laptop that runs with the lid closed can get hot.
 
 ## Uninstall
 

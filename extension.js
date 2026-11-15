@@ -9,6 +9,12 @@ import {QuickToggle, SystemIndicator} from 'resource:///org/gnome/shell/ui/quick
 
 const ICON_FILE = 'icons/digital-openclaw-symbolic.svg';
 
+// Played when the lid closes while the inhibitor is active, so the laptop
+// does not go into a bag while it is still running.
+const WARNING_SOUND = 'dialog-warning';
+const WARNING_BEEPS = 3;
+const WARNING_INTERVAL_MS = 600;
+
 // Holds a logind "handle-lid-switch" inhibitor while `wanted` is true.
 // This is the same mechanism gsd-power uses for external monitors and
 // what `systemd-inhibit --what=handle-lid-switch` does.
@@ -115,7 +121,42 @@ class LidIndicator extends SystemIndicator {
         this._changedId = this._settings.connect('changed::enabled',
             () => this._update());
 
+        this._warningId = 0;
+        this._lidId = global.backend.connect('lid-is-closed-changed',
+            (backend, closed) => this._onLidChanged(closed));
+
         this._update();
+    }
+
+    _onLidChanged(closed) {
+        this._stopWarning();
+        if (closed && this._inhibitor.active &&
+            this._settings.get_boolean('lid-close-sound'))
+            this._startWarning();
+    }
+
+    _startWarning() {
+        const player = global.display.get_sound_player();
+        let beeps = 0;
+        const beep = () => {
+            player.play_from_theme(WARNING_SOUND,
+                'Digital OpenClaw: lid closed while the laptop stays awake', null);
+            beeps++;
+            if (beeps < WARNING_BEEPS)
+                return GLib.SOURCE_CONTINUE;
+            this._warningId = 0;
+            return GLib.SOURCE_REMOVE;
+        };
+        beep();
+        this._warningId = GLib.timeout_add(GLib.PRIORITY_DEFAULT,
+            WARNING_INTERVAL_MS, beep);
+    }
+
+    _stopWarning() {
+        if (this._warningId) {
+            GLib.source_remove(this._warningId);
+            this._warningId = 0;
+        }
     }
 
     _update() {
@@ -136,6 +177,8 @@ class LidIndicator extends SystemIndicator {
     }
 
     destroy() {
+        this._stopWarning();
+        global.backend.disconnect(this._lidId);
         this._settings.disconnect(this._changedId);
         Gio.Settings.unbind(this._toggle, 'checked');
         this._inhibitor.destroy();
