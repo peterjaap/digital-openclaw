@@ -78,3 +78,7 @@ Before you put the laptop in a bag, turn the toggle off. A laptop that runs with
 gnome-extensions disable digital-openclaw@peterjaap
 rm -rf ~/.local/share/gnome-shell/extensions/digital-openclaw@peterjaap
 ```
+
+## License
+
+MIT. See [LICENSE](LICENSE).
