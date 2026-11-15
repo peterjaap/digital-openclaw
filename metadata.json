@@ -1,0 +1,9 @@
+{
+  "name": "Digital OpenClaw",
+  "description": "Holds your laptop lid open, digitally: a Quick Settings toggle that blocks suspend on lid close via a logind handle-lid-switch inhibitor.",
+  "uuid": "digital-openclaw@peterjaap",
+  "settings-schema": "org.gnome.shell.extensions.digital-openclaw",
+  "session-modes": ["user", "unlock-dialog"],
+  "shell-version": ["46", "47", "48", "49", "50"],
+  "version": 2
+}
